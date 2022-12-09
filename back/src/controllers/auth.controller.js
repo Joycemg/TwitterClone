@@ -25,7 +25,6 @@ export const logIn = async (_, res, next) => {
       if (err || !user) {
         return res.status(400).json({ msg: err.message });
       }
-      console.log(_.user);
 
       _.login(user, { session: false }, async (err) => {
         if (err) return res.status(500).json(err);

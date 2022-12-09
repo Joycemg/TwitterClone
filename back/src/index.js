@@ -8,6 +8,7 @@ import db from './config/db.config.js';
 import './utils/auth/index.js';
 
 import authRouter from './routes/auth.route.js';
+import tweetRouter from './routes/tweet.route.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use(authRouter);
+app.use(tweetRouter);
 
 app.get('/', (_, res) => {
   res.send('<h1 align="center">Welcome Twitter Clone API</h1>');

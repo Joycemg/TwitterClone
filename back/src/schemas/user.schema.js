@@ -93,6 +93,8 @@ const userSchema = new Schema(
 );
 
 userSchema.pre('save', function () {
+  if (this.password.length > 20) return;
+
   const salt = bcrypt.genSaltSync(10);
   const passwordHash = bcrypt.hashSync(this.password, salt);
   if (!passwordHash) throw new Error('error save password');
