@@ -37,7 +37,29 @@ const postTweet = async (body) => {
 
   return returnTweet;
 };
-const postLike = async () => {};
+const postLike = async (body) => {
+  const { userID, tweetID } = body;
+  const user = await User.findById(userID);
+  if (!user) throw new Error('No found user');
+  const tweet = await Tweet.findById(tweetID);
+  if (!tweet) throw new Error('No found tweet');
+
+  if (user.likes.includes(tweetID)) {
+    const idIlikeUser = user.likes.indexOf(tweetID);
+    if (idIlikeUser !== -1) user.likes.splice(idIlikeUser, 1);
+    const idIlikeTweet = tweet.likes.indexOf(userID);
+    if (idIlikeTweet !== -1) tweet.likes.splice(idIlikeTweet, 1);
+    user.save();
+    tweet.save();
+    return 'I dont Like';
+  }
+
+  tweet.likes.push(userID);
+  user.likes.unshift(tweet);
+  user.save();
+  tweet.save();
+  return 'I Like';
+};
 
 const service = {
   postTweet,

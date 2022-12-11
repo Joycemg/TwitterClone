@@ -20,4 +20,17 @@ export const createTweet = async (_, res) => {
   }
 };
 
-export const likeTweet = async (_, res) => {};
+export const likeTweet = async (_, res) => {
+  const body = {
+    userID: _.user.id,
+    tweetID: _.params.id,
+  };
+
+  try {
+    const like = await service.postLike(body);
+    return res.status(201).json({ message: like });
+  } catch (error) {
+    const { message } = error;
+    return res.status(404).json({ message });
+  }
+};
