@@ -34,3 +34,20 @@ export const likeTweet = async (_, res) => {
     return res.status(404).json({ message });
   }
 };
+
+export const retweet = async (_, res) => {
+  const body = {
+    userID: _.user.id,
+    tweetID: _.params.id,
+    username: _.user.username,
+    name: _.user.name,
+  };
+
+  try {
+    const retweet = await service.postRetweet(body);
+    return res.status(201).json({ message: retweet });
+  } catch (error) {
+    const { message } = error;
+    return res.status(404).json({ message });
+  }
+};

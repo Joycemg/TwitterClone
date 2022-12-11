@@ -61,9 +61,47 @@ const postLike = async (body) => {
   return 'I Like';
 };
 
+const postRetweet = async (body) => {
+  const { userID, tweetID } = body;
+  const user = await User.findById(userID);
+  if (!user) throw new Error('No found user');
+  const tweet = await Tweet.findById(tweetID);
+  if (!tweet) throw new Error('No found tweet');
+
+  if (user.retweets.includes(tweetID)) {
+    await Tweet.findOneAndDelete({ retweet: tweetID });
+
+    var idUserRetweet = user.retweets.indexOf(tweetID);
+    if (idUserRetweet !== -1) user.retweets.splice(idUserRetweet, 1);
+
+    var idTRetweet = tweet.retweets.indexOf(userID);
+    if (idTRetweet !== -1) tweet.retweets.splice(idTRetweet, 1);
+
+    user.save();
+    tweet.save();
+    return 'undo retweet';
+  }
+
+  const templateRetweet = {
+    user: userID,
+    retweet: tweet._id,
+    username: body.username,
+    name: body.name,
+    description: `${'retweeted from ' + tweet._id}`,
+  };
+
+  const retweet = await Tweet.create(templateRetweet);
+  user.retweets.unshift(tweetID);
+  user.tweets.unshift(retweet);
+  tweet.retweets.unshift(userID);
+  user.save();
+  tweet.save();
+  return 'retweeted';
+};
 const service = {
   postTweet,
   postLike,
+  postRetweet,
 };
 
 export default service;
