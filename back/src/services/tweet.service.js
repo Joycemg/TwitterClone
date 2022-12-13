@@ -60,7 +60,6 @@ const postLike = async (body) => {
   tweet.save();
   return 'I Like';
 };
-
 const postRetweet = async (body) => {
   const { userID, tweetID } = body;
   const user = await User.findById(userID);
@@ -98,10 +97,30 @@ const postRetweet = async (body) => {
   tweet.save();
   return 'retweeted';
 };
+const deleteTweet = async (body) => {
+  const { userID, tweetID } = body;
+  const tweet = await Tweet.findById(tweetID);
+  if (!tweet) throw new Error('No found tweet');
+  if (userID === tweet.user.toString()) {
+    if (tweet.parent) {
+      const idParent = tweet.parent;
+      const parent = await Tweet.findById(idParent);
+      if (!parent) throw new Error('No found tweet');
+      const idReplies = parent.replies.indexOf(tweetID);
+      if (idReplies !== -1) parent.replies.splice(idReplies, 1);
+      parent.save();
+    }
+    await Tweet.findByIdAndDelete(tweetID);
+    return 'tweet deleted';
+  }
+
+  return 'No delete';
+};
 const service = {
   postTweet,
   postLike,
   postRetweet,
+  deleteTweet,
 };
 
 export default service;

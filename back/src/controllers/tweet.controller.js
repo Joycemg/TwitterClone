@@ -19,7 +19,6 @@ export const createTweet = async (_, res) => {
     return res.status(404).json({ message });
   }
 };
-
 export const likeTweet = async (_, res) => {
   const body = {
     userID: _.user.id,
@@ -34,7 +33,6 @@ export const likeTweet = async (_, res) => {
     return res.status(404).json({ message });
   }
 };
-
 export const retweet = async (_, res) => {
   const body = {
     userID: _.user.id,
@@ -46,6 +44,21 @@ export const retweet = async (_, res) => {
   try {
     const retweet = await service.postRetweet(body);
     return res.status(201).json({ message: retweet });
+  } catch (error) {
+    const { message } = error;
+    return res.status(404).json({ message });
+  }
+};
+export const removeTweet = async (_, res) => {
+  const body = {
+    userID: _.user.id,
+    tweetID: _.params.id,
+    username: _.user.username,
+    name: _.user.name,
+  };
+  try {
+    const remove = await service.deleteTweet(body);
+    return res.status(201).json({ message: remove });
   } catch (error) {
     const { message } = error;
     return res.status(404).json({ message });
