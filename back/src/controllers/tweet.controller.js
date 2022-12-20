@@ -1,5 +1,24 @@
 import service from '../services/tweet.service.js';
 
+export const seeTweets = async (_, res) => {
+  try {
+    const tweets = await service.getTweets();
+    return res.status(201).json({ message: 'Obtain Tweets', tweets });
+  } catch (error) {
+    const { message } = error;
+    return res.status(404).json({ message });
+  }
+};
+export const seeTweet = async (_, res) => {
+  const { id } = _.params;
+  try {
+    const tweet = await service.getTweet(id);
+    return res.status(201).json({ message: 'Obtain Tweet', tweet });
+  } catch (error) {
+    const { message } = error;
+    return res.status(404).json({ message });
+  }
+};
 export const createTweet = async (_, res) => {
   const tweet = {
     description: _.body.description,
@@ -59,6 +78,21 @@ export const removeTweet = async (_, res) => {
   try {
     const remove = await service.deleteTweet(body);
     return res.status(201).json({ message: remove });
+  } catch (error) {
+    const { message } = error;
+    return res.status(404).json({ message });
+  }
+};
+
+export const addBookmarks = async (_, res) => {
+  const body = {
+    userID: _.user.id,
+    tweetID: _.params.id,
+  };
+
+  try {
+    const bookmarked = await service.postBookmark(body);
+    return res.status(201).json({ message: bookmarked });
   } catch (error) {
     const { message } = error;
     return res.status(404).json({ message });

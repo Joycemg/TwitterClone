@@ -116,11 +116,54 @@ const deleteTweet = async (body) => {
 
   return 'No delete';
 };
+
+const getTweet = async (param) => {
+  const tweet = await Tweet.findById(param)
+    .populate({ path: 'user', select: 'username profileImg name' })
+    .populate({ path: 'replies', populate: { path: 'user', model: 'User', select: 'username profileImg name' } });
+  console.log(tweet);
+  if (!tweet) throw new Error('No found tweet');
+  return tweet;
+};
+
+const getTweets = async () => {
+  const tweets = await Tweet.find()
+    .populate('user', 'username name profileImg')
+    .sort({ _id: -1 })
+    .populate({ path: 'parent', populate: { path: 'user', select: 'username profileImg name' } })
+    .populate({ path: 'retweet', model: 'Tweet', populate: { path: 'user', select: 'username profileImg name' } })
+    .populate({ path: 'parent', populate: { path: 'parent', modal: 'Tweet', select: 'username' } });
+  if (!tweets.length) throw new Error('No found tweet');
+  return tweets;
+};
+
+const postBookmark = async (body) => {
+  const { userID, tweetID } = body;
+
+  const user = await User.findById(userID);
+  if (!user) throw new Error('No found user');
+
+  if (user.bookmarks.includes(tweetID)) {
+    const idBookmark = user.bookmarks.indexOf(tweetID);
+    if (idBookmark !== -1) {
+      user.bookmarks.splice(idBookmark, 1);
+      user.save();
+      return 'removed from bookmarks';
+    }
+  }
+  user.bookmarks.unshift(tweetID);
+  user.save();
+  return 'bookmarked';
+};
+
 const service = {
   postTweet,
   postLike,
   postRetweet,
   deleteTweet,
+  getTweet,
+  getTweets,
+  postBookmark,
 };
 
 export default service;
