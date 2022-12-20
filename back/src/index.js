@@ -9,7 +9,7 @@ import './utils/auth/index.js';
 
 import authRouter from './routes/auth.route.js';
 import tweetRouter from './routes/tweet.route.js';
-
+import listRouter from './routes/list.route.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -21,6 +21,7 @@ app.use(cors());
 
 app.use(authRouter);
 app.use(tweetRouter);
+app.use(listRouter);
 
 app.get('/', (_, res) => {
   res.send('<h1 align="center">Welcome Twitter Clone API</h1>');
